@@ -21,7 +21,7 @@
         height = canvas.height;
         width = canvas.width;
 
-        xAxis = Math.floor(height / 2);
+        xAxis = Math.floor(height / 3);
         yAxis = 0;
         draw.t = 0;
         if (draw_id == null) {
@@ -43,13 +43,13 @@
         context.clearRect(0, 0, width, height);
 
         //波を描画
-        drawWave('#1A1A1A', 1, 3, 0);
+        drawWave('#00e2a3', 1, 3, 0);
 
         // Update the time and draw again
         draw.seconds = draw.seconds + .009;
         console.log(draw.seconds);
         draw.t = draw.seconds * Math.PI;
-        const updateTime = 35;
+        const updateTime = 30;
         draw_id = setTimeout(draw, updateTime);
     };
     draw.seconds = 0;
@@ -64,11 +64,17 @@
         context.globalAlpha = alpha;
         const rate = 0.5;
         context.beginPath(); //パスの開始
-        drawSine(draw.t / rate, zoom, delay);//
+        //上側の波
+        drawSine(draw.t / rate, zoom, Math.PI / 2, -1);//
+        context.lineTo(width + 10, 0); //パスをCanvasの右下へ
+        context.lineTo(0, 0); //パスをCanvasの左下へ、これで最初のところに点を持ってくる？
+        //下側の波
+        drawSine(draw.t / rate, zoom, delay, 1);//
         context.lineTo(width + 10, height); //パスをCanvasの右下へ
-        context.lineTo(0, height); //パスをCanvasの左下へ
+        context.lineTo(0, height); //パスをCanvasの左下へ、これで最初のところに点を持ってくる？
         context.closePath() //パスを閉じる
         context.fill(); //塗りつぶす
+        //下側のスクリーンから飛び出したところに線を引くことで、波がしっかりと塗りつぶされる
     }
 
     /**
@@ -77,19 +83,19 @@
      * The sine curve is drawn in 10px segments starting at the origin. 
      * drawSine(時間, 波の幅のzoom, 波の開始位置の遅れ)
      */
-    function drawSine(t, zoom, delay) {
+    function drawSine(t, zoom, delay, dir) {
 
         // Set the initial x and y, starting at 0,0 and translating to the origin on
         // the canvas.
+        var newXAxis = dir == 1 ? height - xAxis : xAxis;
         var x = t; //時間を横の位置とする
-        var y = Math.sin(x) / zoom;
-        context.moveTo(yAxis, unit * y + xAxis); //スタート位置にパスを置く
-
+        var y = Math.sin(x) / zoom;//波の高さをつぶす
+        context.moveTo(yAxis, unit * y * + newXAxis); //スタート位置にパスを置く
         // Loop to draw segments (横幅の分、波を描画)
         for (i = yAxis; i <= width + 10; i += 10) {
-            x = t + (-yAxis + i) / unit / zoom;
-            y = Math.sin(x - delay) / 3;
-            context.lineTo(i, unit * y + xAxis);
+            x = t + (-yAxis + i) / unit / zoom;//周期が短くならないように、小さい値を足す
+            y = Math.sin(x - delay) / zoom;
+            context.lineTo(i, unit * y + newXAxis);
         }
     }
     window.addEventListener('resize', function () {
