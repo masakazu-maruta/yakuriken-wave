@@ -66,11 +66,11 @@
         context.beginPath(); //パスの開始
         //上側の波
         drawSine(draw.t / rate, zoom, Math.PI / 2, -1);//
-        context.lineTo(width + 10, 0); //パスをCanvasの右下へ
+        context.lineTo(width, 0); //パスをCanvasの右下へ
         context.lineTo(0, 0); //パスをCanvasの左下へ、これで最初のところに点を持ってくる？
         //下側の波
         drawSine(draw.t / rate, zoom, delay, 1);//
-        context.lineTo(width + 10, height); //パスをCanvasの右下へ
+        context.lineTo(width, height); //パスをCanvasの右下へ
         context.lineTo(0, height); //パスをCanvasの左下へ、これで最初のところに点を持ってくる？
         context.closePath() //パスを閉じる
         context.fill(); //塗りつぶす
@@ -92,7 +92,7 @@
         var y = Math.sin(x) / zoom;//波の高さをつぶす
         context.moveTo(yAxis, unit * y * + newXAxis); //スタート位置にパスを置く
         // Loop to draw segments (横幅の分、波を描画)
-        for (i = yAxis; i <= width + 10; i += 10) {
+        for (i = yAxis; i <= width; i += 10) {
             x = t + (-yAxis + i) / unit / zoom;//周期が短くならないように、小さい値を足す
             y = Math.sin(x - delay) / zoom;
             context.lineTo(i, unit * y + newXAxis);
